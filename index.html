@@ -60,8 +60,9 @@
       left: 0;
       width: 100%;
       height: 100%;
+      background: rgba(0, 0, 0, 0); /* Прозрачный фон */
       z-index: 10;
-      pointer-events: none; /* Пропускает клики к iframe */
+      pointer-events: all; /* Позволяет перехватывать клики */
     }
   </style>
 
@@ -91,7 +92,7 @@
 
   <!-- Левый столбец -->
   <div class="sidebar">
-    <h1>Привет10</h1>
+    <h1>Приве89т</h1>
     <p>Описание</p>
   </div>
 
@@ -107,12 +108,11 @@
   </div>
 
   <script>
-    // Перехват события клика на маске и регистрация в Яндекс.Метрике
     const clickMask = document.querySelector('.click-mask');
     const iframe = document.getElementById('figma-prototype');
 
     clickMask.addEventListener('click', function(e) {
-      // Логируем событие клика в Яндекс.Метрике
+      // Логирование события клика в Яндекс.Метрике
       ym(98694303, 'reachGoal', 'prototype_click', {
         x: e.clientX,
         y: e.clientY
@@ -123,21 +123,13 @@
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      // Имитация клика для передачи внутрь iframe
-      const clickEvent = new MouseEvent('click', {
-        bubbles: true,
-        cancelable: true,
-        clientX: x,
-        clientY: y
-      });
-
-      // Передаем клик внутрь прототипа
-      iframe.contentWindow.postMessage({ type: 'click', x, y }, '*');
+      // Имитация клика внутри iframe через передачу координат
+      iframe.contentWindow.postMessage({ type: 'click', x: x, y: y }, '*');
     });
 
-    // Обрабатываем сообщения, если необходимо взаимодействие с iframe
+    // Обрабатываем сообщения в iframe для корректного взаимодействия
     window.addEventListener('message', function(event) {
-      if (event.data && event.data.type === 'click') {
+      if (event.origin === 'https://embed.figma.com' && event.data.type === 'click') {
         const simulatedClick = new MouseEvent('click', {
           clientX: event.data.x,
           clientY: event.data.y
