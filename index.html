@@ -62,7 +62,7 @@
       height: 100%;
       background: transparent;
       z-index: 10;
-      pointer-events: none; /* Не блокирует взаимодействие с iframe */
+      pointer-events: all; /* Маска перехватывает клики */
     }
   </style>
 
@@ -92,7 +92,7 @@
 
   <!-- Левый столбец -->
   <div class="sidebar">
-    <h1>Привет3</h1>
+    <h1>Привет8</h1>
     <p>Описание</p>
   </div>
 
@@ -113,12 +113,17 @@
     const iframe = document.getElementById('figma-prototype');
 
     clickMask.addEventListener('click', function(e) {
-      // Передача клика в iframe для интерактивности
+      // Логируем событие для Яндекс.Метрики
+      ym(98694303, 'reachGoal', 'prototype_click', {
+        x: e.clientX,
+        y: e.clientY
+      });
+
+      // Имитируем клик по iframe
       const rect = iframe.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      // Создаем событие клика
       const clickEvent = new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
@@ -126,13 +131,8 @@
         clientY: y
       });
 
-      iframe.contentWindow.document.dispatchEvent(clickEvent);
-
-      // Логируем событие для Яндекс.Метрики
-      ym(98694303, 'reachGoal', 'prototype_click', {
-        x: x,
-        y: y
-      });
+      // Отправляем клик внутрь iframe
+      iframe.contentWindow.postMessage({ type: 'click', x, y }, '*');
     });
 
   </script>
